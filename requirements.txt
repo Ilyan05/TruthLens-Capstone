@@ -1,1 +1,6 @@
 fastapi
+pydantic
+easyocr
+pillow
+opencv-python
+openai-whisper
