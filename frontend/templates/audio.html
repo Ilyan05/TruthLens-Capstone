@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Audio - TruthLens{% endblock %}
+{% block nav_audio %}active{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h2>Verify an Audio Clip</h2>
+  <p>Upload an audio clip. We'll transcribe the speech and cross-check the
+     spoken claim against trusted evidence.</p>
+</section>
+
+<form id="audio-form" class="verify-form" data-endpoint="/api/v1/submissions/audio" enctype="multipart/form-data">
+  <label for="audio_file">Upload Audio</label>
+  <input type="file" id="audio_file" name="file" accept="audio/mpeg, audio/wav, audio/mp4, audio/x-m4a" required />
+
+  <audio id="audio-preview" class="preview hidden" controls></audio>
+
+  <button type="submit" class="btn-primary">Analyze Audio</button>
+</form>
+
+<section id="result-box" class="result-box hidden"></section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    initVerifyForm("audio-form", "result-box");
+    initFilePreview("audio_file", "audio-preview");
+  });
+</script>
+{% endblock %}

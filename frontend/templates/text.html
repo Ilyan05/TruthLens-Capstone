@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Text - TruthLens{% endblock %}
+{% block nav_text %}active{% endblock %}
+
+{% block content %}
+<section class="page-header">
+  <h2>Verify a Text Claim</h2>
+  <p>Paste a claim, statement, or article snippet below. We'll extract the core
+     claim and cross-check it against trusted sources.</p>
+</section>
+
+<form id="text-form" class="verify-form" data-endpoint="/api/v1/submissions/text">
+  <label for="claim_text">Claim / Text</label>
+  <textarea
+    id="claim_text"
+    name="claim_text"
+    rows="6"
+    placeholder="e.g. 'Scientists confirm coffee cures insomnia...'"
+    required
+  ></textarea>
+
+  <button type="submit" class="btn-primary">Analyze Claim</button>
+</form>
+
+<section id="result-box" class="result-box hidden"></section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => initVerifyForm("text-form", "result-box"));
+</script>
+{% endblock %}

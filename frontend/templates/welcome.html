@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}TruthLens - Verify Before You Trust{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Know what's real. <span class="accent">Instantly.</span></h1>
+  <p class="hero-sub">
+    TruthLens analyzes text claims, images, and audio clips to detect
+    misinformation, AI-generated content, and manipulation, backed by
+    grounded evidence retrieval and an explainable verdict report.
+  </p>
+</section>
+
+<section class="card-grid">
+  <a href="/text" class="option-card">
+    <div class="option-icon">Text</div>
+    <h3>Verify Text</h3>
+    <p>Paste a claim, headline, or article link and get a fact-checked verdict.</p>
+  </a>
+
+  <a href="/image" class="option-card">
+    <div class="option-icon">Image</div>
+    <h3>Verify Image</h3>
+    <p>Upload an image to detect AI-generation, deepfakes, or manipulation.</p>
+  </a>
+
+  <a href="/audio" class="option-card">
+    <div class="option-icon">Audio</div>
+    <h3>Verify Audio</h3>
+    <p>Upload an audio clip to transcribe and cross-check the spoken claim.</p>
+  </a>
+</section>
+
+<section class="verdicts-strip">
+  <h4>Possible Verdicts</h4>
+  <div class="badge-row">
+    <span class="badge badge-authentic">Authentic</span>
+    <span class="badge badge-ai">AI-Generated</span>
+    <span class="badge badge-false">False</span>
+    <span class="badge badge-manipulated">Manipulated</span>
+    <span class="badge badge-misleading">Misleading</span>
+    <span class="badge badge-interpreted">Interpreted Differently</span>
+    <span class="badge badge-inconclusive">Inconclusive</span>
+  </div>
+</section>
+{% endblock %}
