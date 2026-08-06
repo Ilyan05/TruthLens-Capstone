@@ -1,0 +1,7 @@
+id,text,expected_label
+1,The government announced free electricity for all households starting next month.,FALSE
+2,The Prime Minister inaugurated the new Bengaluru metro line today.,authentic
+3,NASA confirms the Earth will have 15 days of total darkness in November.,FALSE
+4,Drinking hot lemon water cures COVID-19 within 24 hours doctors say., FALSE
+5,Old 2019 protest video shared as if it happened this week.,misleading
+6,I think the new phone looks amazing and everyone should buy it.,opinion
