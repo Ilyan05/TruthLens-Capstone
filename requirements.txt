@@ -1,18 +1,25 @@
-
-fastapi==0.136.3
-starlette==1.3.1
-uvicorn[standard]==0.35.0
-jinja2==3.1.6
-python-multipart==0.0.32
+#Phase 1-4 dependencies
+# First: pip install --upgrade pip setuptools wheel
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
 python-dotenv
+# LLM
 langchain
 langchain-google-genai
 google-generativeai
-
-pydantic
-easyocr
-pillow
-opencv-python
-openai-whisper
+# Phase 3 web search (free)
 ddgs
 wikipedia
+# Phase 4 Tree-of-Thought + Legal RAG
+langgraph
+langchain-core
+# Legal RAG (only needed when you build the law index):
+langchain-community
+langchain-chroma
+langchain-huggingface
+langchain-text-splitters
+sentence-transformers
+chromadb
+pypdf
