@@ -34,8 +34,10 @@ def route(message: str, has_previous_verdict: bool) -> dict:
         default={"intent": "claim", "reason": "fallback"},
     )
     intent = result.get("intent", "claim")
+
     if intent == "follow_up" and not has_previous_verdict:
         intent = "claim"
+        
     if intent not in ("claim", "chat", "follow_up"):
         intent = "claim"
     return {"intent": intent, "reason": result.get("reason", "")}

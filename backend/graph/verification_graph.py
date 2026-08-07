@@ -10,8 +10,8 @@ combines their scores into a final verdict.
            └──────┬───────┘
                   ▼
         ┌─────────────────────────────────────────┐
-        │  supporting → contradicting → context →  │   (4 ToT branch nodes)
-        │  source_credibility                      │
+        │  supporting → contradicting → context → │   (4 ToT branch nodes)
+        │  source_credibility                     │
         └──────────────────┬──────────────────────┘
                            ▼
                     ┌──────────────┐

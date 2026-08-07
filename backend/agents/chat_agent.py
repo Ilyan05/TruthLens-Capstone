@@ -47,17 +47,21 @@ def casual_reply(message: str, history: list) -> str:
 def follow_up_reply(message: str, last_verdict: dict) -> str:
     lv = last_verdict or {}
     ev_lines = []
+
     for e in (lv.get("evidence") or [])[:5]:
         ev_lines.append(f"- {e.get('title','')} ({e.get('source_type','')}): "
                         f"{e.get('snippet','')}")
+
     prompt = _FOLLOWUP_PROMPT.format(
         verdict=lv.get("verdict", "Inconclusive"),
         confidence=round(lv.get("confidence", 0.0), 2),
         summary=lv.get("summary", ""),
         evidence="\n".join(ev_lines) if ev_lines else "(no evidence stored)",
         message=(message or "").replace('"', "'"))
+
     try:
         return llm.call_llm(prompt, reasoning=False).strip()
+        
     except Exception:
         return (f"Based on the previous check, the verdict was "
                 f"{lv.get('verdict','Inconclusive')}. Ask me to run a fresh check.")

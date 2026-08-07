@@ -1,4 +1,5 @@
-"""Claim Extraction Agent (Option C: claim + entities + type + search_query)."""
+"""Claim Extraction Agent (claim + entities + claim type + search_query)."""
+
 from backend import llm
 
 _CLAIM_PROMPT = """You extract the central factual claim from a user's message
@@ -33,6 +34,7 @@ def extract_claim(message: str) -> dict:
     result.setdefault("claim_type", "factual")
     result.setdefault("search_query", result.get("claim_text", message))
     ents = result.get("entities") or {}
+    
     for k in ("people", "organizations", "places", "dates", "events"):
         ents.setdefault(k, [])
     result["entities"] = ents
