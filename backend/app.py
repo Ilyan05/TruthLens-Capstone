@@ -1,13 +1,3 @@
-"""
-TruthLens - FastAPI Backend
-----------------------------
-Serves the 4 pages (Welcome, Text, Image, Audio) and exposes stub
-submission endpoints. Wire your Claim Extraction / Media Forensics /
-RAG agents into the TODO sections below when the pipeline is ready.
-
-NOTE: Video is intentionally NOT supported — only text, image, audio.
-"""
-
 import uuid
 from pathlib import Path
 

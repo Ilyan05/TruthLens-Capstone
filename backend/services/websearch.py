@@ -1,19 +1,3 @@
-"""
-Web Search Service  (PHASE 3)  — 100% FREE, no API key.
-
-Gathers evidence for a claim from multiple free sources:
-  1. Fact-check sites   (AltNews, BOOM, Factly, PIB, Snopes ...)   via DuckDuckGo site: filter
-  2. India news sites   (The Hindu, Indian Express, NDTV ...)      via DuckDuckGo site: filter
-  3. General web        (DuckDuckGo, latest results)
-  4. Wikipedia          (encyclopedic summary for people/history/facts)
-
-Design decision (finalized with user):
-  - NO hardcoded source priority. We only TAG each item's source_type.
-  - The Verification Agent (Phase 4) decides trust via reasoning.
-
-Everything degrades gracefully: if a source/library/network fails, we skip it
-and continue — search must never crash the pipeline.
-"""
 from urllib.parse import urlparse
 from backend import config
 

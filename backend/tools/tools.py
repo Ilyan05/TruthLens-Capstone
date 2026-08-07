@@ -1,16 +1,3 @@
-"""
-Agent Tools (PHASE 4) — proper LangChain @tool functions.
-
-These are the tools the Verification agent can use. In Phase 4 they are exposed
-in two ways (hybrid, as finalized):
-  - orchestrated: the graph calls them directly (safe, deterministic)
-  - agentic: they can be BOUND to the LLM so it chooses when to call them
-             (see graph/verification_graph.py bind_tools usage)
-
-Two tools:
-  web_search_tool  -> free web evidence (DuckDuckGo + Wikipedia + news + factcheck)
-  legal_rag_tool   -> BNS 2023 + Constitution sections (Chroma RAG)
-"""
 from langchain_core.tools import tool
 from backend.services import websearch, legal_rag
 

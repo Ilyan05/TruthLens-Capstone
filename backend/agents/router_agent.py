@@ -1,4 +1,3 @@
-"""Intent Router — claim | chat | follow_up (rule-then-LLM)."""
 from backend import llm
 
 _ROUTER_PROMPT = """You are the intent router of a fact-checking assistant.

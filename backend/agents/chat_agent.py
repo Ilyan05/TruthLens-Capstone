@@ -1,4 +1,3 @@
-"""Chat Agent — casual replies + follow-up answers (reuse previous verdict)."""
 from backend import llm
 
 _CASUAL_PROMPT = """You are TruthLens, a professional AI fact-checking assistant.

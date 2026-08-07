@@ -1,33 +1,3 @@
-"""
-🌳 TREE OF THOUGHT — Verification Graph (PHASE 4, the star of TruthLens)
-
-Built with LangGraph StateGraph. The 4 Tree-of-Thought branches are graph NODES
-that each reason about the claim from one perspective, then an aggregator node
-combines their scores into a final verdict.
-
-           ┌──────────────┐
-   START → │ gather_tools │  (web_search_tool + legal_rag_tool if legal claim)
-           └──────┬───────┘
-                  ▼
-        ┌─────────────────────────────────────────┐
-        │  supporting → contradicting → context →  │   (4 ToT branch nodes)
-        │  source_credibility                      │
-        └──────────────────┬──────────────────────┘
-                           ▼
-                    ┌──────────────┐
-                    │  aggregate   │ → verdict → END
-                    └──────────────┘
-
-Design notes:
-  - TOOLS ARE HYBRID: the graph orchestrates them in `gather_tools`, and they are
-    also BOUND to the LLM (see build_tool_binding) to demonstrate agentic tool use.
-  - Branches run sequentially (free-tier friendly) but each is an independent
-    reasoning path — that is the essence of Tree of Thought.
-  - Everything degrades gracefully; a failed branch just yields a neutral score.
-
-The graph is wrapped by `run_tree_of_thought(...)` which also acts as a generator
-of progress events so the router can stream branch scores live to the UI.
-"""
 from typing import TypedDict, List
 from backend import llm, config
 from backend.services import legal_rag

@@ -1,17 +1,3 @@
-"""
-Context-NL Builder  (PHASE 3)
-
-Takes raw evidence (from websearch) + the claim, and produces a clean,
-stance-tagged context that the Verification Agent (Phase 4) can reason over.
-
-For each evidence item it assigns a stance:
-    supporting    -> backs the claim
-    contradicting -> refutes the claim
-    neutral       -> related but doesn't clearly support/refute
-
-To save free-tier quota, ALL items are stance-tagged in a SINGLE LLM call
-(batch), not one call per item.
-"""
 from backend import llm
 
 

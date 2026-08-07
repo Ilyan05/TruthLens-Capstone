@@ -11,80 +11,53 @@
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="brand">
-        <span class="logo">🔍</span>
-        <div>
-          <div class="brand-name">TruthLens</div>
-          <div class="brand-tag">AI Fact Verification</div>
-        </div>
-      </div>
-
+      <div class="brand"><span class="logo">🔍</span>
+        <div><div class="brand-name">TruthLens</div><div class="brand-tag">AI Fact Verification</div></div></div>
       <button id="newChatBtn" class="new-chat"><span>+</span> New Verification</button>
-
-      <div class="side-section">
-        <div class="side-title">How it works</div>
+      <div class="side-section"><div class="side-title">How it works</div>
         <ol class="steps-list">
           <li>Submit a claim — text, audio, or image</li>
           <li>AI extracts the core claim</li>
           <li>Searches trusted sources</li>
-          <li>Tree-of-Thought verification</li>
+          <li>Tree-of-Thought + Reflection</li>
           <li>Verdict, confidence &amp; evidence</li>
-        </ol>
-      </div>
-
-      <div class="side-section">
-        <div class="side-title">Verdict types</div>
+        </ol></div>
+      <div class="side-section"><div class="side-title">Verdict types</div>
         <div class="legend">
           <span class="legend-item"><i class="dot v-Real"></i>Real</span>
           <span class="legend-item"><i class="dot v-Fake"></i>Fake</span>
           <span class="legend-item"><i class="dot v-Misleading"></i>Misleading</span>
           <span class="legend-item"><i class="dot v-Manipulated"></i>Manipulated</span>
           <span class="legend-item"><i class="dot v-Inconclusive"></i>Inconclusive</span>
-        </div>
-      </div>
-
-      <div class="side-footer">
-        <span class="badge-phase">Phase 3</span>
-        <span id="llmStatus" class="llm-status">checking…</span>
-      </div>
+        </div></div>
+      <div class="side-footer"><span class="badge-phase">Phase 5 · Audio+Image</span><span id="llmStatus" class="llm-status">checking…</span></div>
     </aside>
-
     <main class="chat">
       <header class="chat-header">
-        <div>
-          <div class="title">Fact Verification Console</div>
-          <div class="subtitle">Verify any claim from text, audio, or image — with transparent reasoning</div>
-        </div>
+        <div><div class="title">Fact Verification Console</div>
+          <div class="subtitle">Verify claims from text, audio, or image — with transparent reasoning</div></div>
         <div class="header-tag">You can type in English or Hindi</div>
       </header>
-
       <div id="messages" class="messages">
-        <div class="msg bot">
-          <div class="avatar">🔍</div>
-          <div class="bubble">
-            <b>Welcome to TruthLens.</b><br />
-            Submit any claim and I'll assess whether it's
-            <b>Real</b>, <b>Fake</b>, <b>Misleading</b>, <b>Manipulated</b>, or
-            <b>Inconclusive</b> — showing my reasoning and evidence along the way.
+        <div class="msg bot"><div class="avatar">🔍</div>
+          <div class="bubble"><b>Welcome to TruthLens.</b><br />
+            Submit any claim as <b>text</b>, upload a <b>voice note</b>, or an <b>image</b> — I'll verify it
+            through a Tree-of-Thought pipeline with a reflection check, and cite evidence (including Indian law).
             <div class="examples">
               <span class="chip" data-ex="The Sun rises in the east">The Sun rises in the east</span>
               <span class="chip" data-ex="J.P. Morgan was Indian">J.P. Morgan was Indian</span>
-              <span class="chip" data-ex="The Great Wall of China is visible from space with the naked eye">Great Wall visible from space</span>
+              <span class="chip" data-ex="Calling someone anti-national is a punishable crime in India">"Anti-national" is a crime</span>
             </div>
           </div>
         </div>
       </div>
-
       <div class="composer-wrap">
         <div class="composer">
           <div class="attach">
-            <label class="attach-btn" title="Upload image">🖼️
-              <input type="file" id="imageInput" accept=".jpg,.jpeg,.png" hidden /></label>
-            <label class="attach-btn" title="Upload audio">🎙️
-              <input type="file" id="audioInput" accept=".mp3,.wav,.m4a,.ogg" hidden /></label>
+            <label class="attach-btn" title="Upload image">🖼️<input type="file" id="imageInput" accept=".jpg,.jpeg,.png" hidden /></label>
+            <label class="attach-btn" title="Upload audio">🎙️<input type="file" id="audioInput" accept=".mp3,.wav,.m4a,.ogg" hidden /></label>
           </div>
-          <textarea id="input" rows="1"
-            placeholder="Enter a claim to verify…  (e.g. “Moon landing was faked”)"></textarea>
+          <textarea id="input" rows="1" placeholder="Enter a claim to verify…  (or upload audio / image)"></textarea>
           <button id="sendBtn" class="send" title="Verify">➤</button>
         </div>
         <div id="fileHint" class="file-hint"></div>

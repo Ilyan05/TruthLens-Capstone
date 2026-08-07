@@ -1,7 +1,4 @@
-"""
-TruthLens - Central Configuration
-All models, thresholds, and settings live HERE (single source of truth).
-"""
+
 import os
 from dotenv import load_dotenv
 

@@ -1,4 +1,3 @@
-"""Pre-Grounder Agent — initial confidence + risk + fast-path decision."""
 from backend import llm, config
 
 _PREGROUND_PROMPT = """You are the pre-grounding step of a fact-checker.

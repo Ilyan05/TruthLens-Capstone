@@ -1,17 +1,3 @@
-"""
-TruthLens - Chat Router (main endpoint)  |  PHASE 3
-
-Claim pipeline now:
-    Intent Router -> [chat | follow_up | claim]
-      claim -> Claim Extraction -> Pre-Grounder
-            -> fast-path? preliminary verdict (model knowledge)
-            -> else       Web Search -> Context-NL Builder (stance-tagged evidence)
-                          -> preliminary evidence-based verdict
-                             (full Tree-of-Thought verdict engine = Phase 4)
-
-Audio/Image accepted; full processing arrives Phase 5.
-Streaming: SSE -> UI shows thinking STEPS + TYPED answer + verdict card + sources.
-"""
 import json
 import asyncio
 from fastapi import APIRouter, Form, UploadFile, File
