@@ -1,4 +1,3 @@
-"""TruthLens - Pydantic Schemas."""
 from pydantic import BaseModel
 from typing import List
 
@@ -6,9 +5,9 @@ from typing import List
 class Evidence(BaseModel):
     title: str = ""
     url: str = ""
-    source_type: str = "web"          # factcheck | news | official | encyclopedia | web
+    source_type: str = "web"
     snippet: str = ""
-    stance: str = "neutral"           # supporting | contradicting | neutral
+    stance: str = "neutral"
 
 
 class ClaimObject(BaseModel):

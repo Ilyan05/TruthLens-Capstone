@@ -1,43 +1,54 @@
-"""Intent Router — claim | chat | follow_up (rule-then-LLM)."""
 from backend import llm
 
-_ROUTER_PROMPT = """You are the intent router of a fact-checking assistant.
-Classify the USER MESSAGE into exactly one label:
+_P = """
+Intent router of a fact-checking assistant.
 
-- "claim": a factual statement or a request to verify something.
-- "chat": greetings, thanks, small talk, or questions about how you work.
-- "follow_up": a question that refers to the PREVIOUS fact-check result \
-(e.g. "why?", "what's the source?", "explain more", "are you sure?").
+Classify USER MESSAGE:
 
-Rules:
-- If HAS_PREVIOUS_VERDICT is false, you may only pick "claim" or "chat".
-- The user may write in English or Hindi/Hinglish. Understand both.
+- "claim": a factual statement or request to verify.
+- "chat": greetings, thanks, small talk, questions about how you work.
+- "follow_up": a question about the PREVIOUS fact-check result.
 
+If HAS_PREVIOUS_VERDICT is false, only pick claim or chat.
+User may write Hindi/English.
 HAS_PREVIOUS_VERDICT: {has_prev}
 USER MESSAGE: "{message}"
+Respond ONLY JSON:
+{{"intent":"claim|chat|follow_up","reason":"short"}}
+"""
 
-Respond with ONLY a JSON object:
-{{"intent": "claim|chat|follow_up", "reason": "short reason"}}"""
-
-
-def route(message: str, has_previous_verdict: bool) -> dict:
+def route(message, has_previous_verdict):
     msg = (message or "").strip()
+
     if not msg:
-        return {"intent": "chat", "reason": "empty message"}
+        return {
+            "intent": "chat",
+            "reason": "empty"
+        }
 
-    prompt = _ROUTER_PROMPT.format(
+    p = _P.format(
         has_prev=str(bool(has_previous_verdict)).lower(),
-        message=msg.replace('"', "'"),
+        message=msg.replace('"', "'")
     )
-    result = llm.call_llm_json(
-        prompt, reasoning=False,
-        default={"intent": "claim", "reason": "fallback"},
-    )
-    intent = result.get("intent", "claim")
 
-    if intent == "follow_up" and not has_previous_verdict:
-        intent = "claim"
-        
-    if intent not in ("claim", "chat", "follow_up"):
-        intent = "claim"
-    return {"intent": intent, "reason": result.get("reason", "")}
+    r = llm.call_llm_json(
+        p,
+        reasoning=False,
+        default={
+            "intent": "claim",
+            "reason": "fallback"
+        }
+    )
+
+    it = r.get("intent", "claim")
+
+    if it == "follow_up" and not has_previous_verdict:
+        it = "claim"
+
+    if it not in ("claim", "chat", "follow_up"):
+        it = "claim"
+
+    return {
+        "intent": it,
+        "reason": r.get("reason", "")
+    }

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruthLens — Metrics</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Inter",system-ui,sans-serif;background:#f4f5f7;color:#1a1d21;padding:32px}
+h1{font-size:28px;color:#0f2a3f}.sub{color:#6b7280;margin:4px 0 24px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:24px}
+.card{background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(16,24,40,.06)}
+.card .k{font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+.card .v{font-size:34px;font-weight:800;color:#0e9f78;margin-top:6px}
+.card .v.small{font-size:22px}
+.panel{background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:20px;margin-bottom:20px}
+.panel h2{font-size:16px;color:#0f2a3f;margin-bottom:14px}
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bar-label{width:120px;font-size:13px;font-weight:600}
+.bar-track{flex:1;height:22px;background:#eceef1;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;color:#fff;font-size:12px;font-weight:700}
+.v-Real{background:#16a34a}.v-Fake{background:#dc2626}.v-Misleading{background:#d97706}.v-Manipulated{background:#7c3aed}.v-Inconclusive{background:#6b7280}
+.stage{background:#028090}
+.muted{color:#9aa1ac;font-size:13px}
+a.back{display:inline-block;margin-bottom:16px;color:#0e9f78;text-decoration:none;font-weight:600}
+</style>
+</head>
+<body>
+<a class="back" href="/">← Back to console</a>
+<h1>TruthLens — Metrics Dashboard</h1>
+<div class="sub">Live from SQLite (verdicts + logs) · computed locally, zero LLM cost</div>
+<div id="root"><p class="muted">Loading…</p></div>
+<script>
+const VC=["Real","Fake","Misleading","Manipulated","Inconclusive"];
+function card(k,v,small){return `<div class="card"><div class="k">${k}</div><div class="v ${small?'small':''}">${v}</div></div>`;}
+function bar(label,val,max,cls){const pct=max?Math.round(val/max*100):0;
+  return `<div class="bar-row"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill ${cls}" style="width:${Math.max(pct,6)}%">${val}</div></div></div>`;}
+async function load(){
+  const r=await fetch('/api/v1/metrics');const m=await r.json();
+  const root=document.getElementById('root');
+  if(!m.enabled){root.innerHTML='<p class="muted">Metrics DB disabled (set DB_ENABLED=True).</p>';return;}
+  const bv=m.by_verdict||{},bi=m.by_input||{};
+  const maxV=Math.max(1,...VC.map(k=>bv[k]||0));
+  const stages=m.avg_latency_ms_per_stage||{};
+  const maxS=Math.max(1,...Object.values(stages));
+  let html='<div class="grid">';
+  html+=card('Total Checks',m.total_checks);
+  html+=card('Avg Confidence',Math.round((m.avg_confidence||0)*100)+'%');
+  html+=card('Human Review',Math.round((m.human_review_rate||0)*100)+'%');
+  html+=card('Success Rate',Math.round((m.success_rate||0)*100)+'%');
+  html+=card('Legal Claims',m.legal_claims);
+  html+=card('Manipulated',m.manipulated_detected);
+  html+='</div>';
+  html+='<div class="panel"><h2>Verdict Distribution</h2>';
+  VC.forEach(k=>{html+=bar(k,bv[k]||0,maxV,'v-'+k);});
+  html+='</div>';
+  html+='<div class="panel"><h2>By Input Type</h2>';
+  ['text','audio','image'].forEach(k=>{const mx=Math.max(1,bi.text||0,bi.audio||0,bi.image||0);html+=bar(k,bi[k]||0,mx,'stage');});
+  html+='</div>';
+  if(Object.keys(stages).length){
+    html+='<div class="panel"><h2>Avg Latency per Stage (ms)</h2>';
+    Object.entries(stages).forEach(([k,v])=>{html+=bar(k,v,maxS,'stage');});
+    html+='</div>';
+  }
+  root.innerHTML=html;
+}
+load();setInterval(load,5000);
+</script>
+</body>
+</html>
