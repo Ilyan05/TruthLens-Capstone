@@ -92,6 +92,7 @@ EVIDENCE:
 Return ONLY JSON:
 {{"score": 0.0, "summary": "what supports the claim, or 'none'", "citations": [indices]}}
 score 0.0-1.0 = strength of supporting evidence."""
+    
     r = _branch_llm(prompt, {"score": 0.0, "summary": "none", "citations": []})
     state.setdefault("branches", {})["supporting"] = _norm_branch(r)
     return state
