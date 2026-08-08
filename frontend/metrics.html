@@ -1,70 +1,406 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TruthLens — Metrics</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Inter",system-ui,sans-serif;background:#f4f5f7;color:#1a1d21;padding:32px}
-h1{font-size:28px;color:#0f2a3f}.sub{color:#6b7280;margin:4px 0 24px;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:24px}
-.card{background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:18px;box-shadow:0 1px 3px rgba(16,24,40,.06)}
-.card .k{font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.6px;font-weight:700}
-.card .v{font-size:34px;font-weight:800;color:#0e9f78;margin-top:6px}
-.card .v.small{font-size:22px}
-.panel{background:#fff;border:1px solid #e6e8eb;border-radius:14px;padding:20px;margin-bottom:20px}
-.panel h2{font-size:16px;color:#0f2a3f;margin-bottom:14px}
-.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.bar-label{width:120px;font-size:13px;font-weight:600}
-.bar-track{flex:1;height:22px;background:#eceef1;border-radius:6px;overflow:hidden}
-.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;color:#fff;font-size:12px;font-weight:700}
-.v-Real{background:#16a34a}.v-Fake{background:#dc2626}.v-Misleading{background:#d97706}.v-Manipulated{background:#7c3aed}.v-Inconclusive{background:#6b7280}
-.stage{background:#028090}
-.muted{color:#9aa1ac;font-size:13px}
-a.back{display:inline-block;margin-bottom:16px;color:#0e9f78;text-decoration:none;font-weight:600}
+  :root{
+    --bg:#070b14;
+    --panel:rgba(20,26,38,.86);
+    --panel-border:#242c3d;
+    --text:#eef1f6;
+    --muted:#8993a8;
+    --dim:#5a6478;
+    --live:#2dd4bf;
+    --real:#22c55e;
+    --fake:#dc2626;
+    --misleading:#d97706;
+    --manipulated:#7c3aed;
+    --inconclusive:#6b7280;
+    --stage:#0284c7;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Inter",system-ui,-apple-system,sans-serif;
+    padding:36px 32px 64px;
+    min-height:100vh;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  #space{position:fixed;inset:0;z-index:-1;background:var(--bg)}
+
+  /* ---------- header ---------- */
+  a.back{
+    display:inline-flex;align-items:center;gap:6px;
+    color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;
+    margin-bottom:26px;transition:color .15s;
+  }
+  a.back:hover{color:var(--live)}
+
+  .masthead{
+    display:flex;align-items:flex-end;justify-content:space-between;
+    flex-wrap:wrap;gap:16px;
+    border-bottom:1px solid var(--panel-border);
+    padding-bottom:18px;margin-bottom:10px;
+  }
+  h1{font-size:26px;font-weight:800;letter-spacing:-.01em;color:#fff}
+  .status{
+    display:flex;align-items:center;gap:7px;
+    font-size:12.5px;font-weight:600;color:var(--live);
+  }
+  .pulse{
+    width:7px;height:7px;border-radius:50%;background:var(--live);
+    box-shadow:0 0 0 0 rgba(45,212,191,.5);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(45,212,191,.45)}
+    70%{box-shadow:0 0 0 8px rgba(45,212,191,0)}
+    100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}
+  }
+  .sub{color:var(--dim);font-size:13px;margin-top:3px}
+  .legend-note{font-size:12.5px;color:var(--dim);margin-bottom:22px}
+  .legend-note b{color:var(--muted);font-weight:600}
+
+  /* ---------- stat cards ---------- */
+  .grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+    gap:14px;margin-bottom:26px;
+  }
+  .card{
+    background:var(--panel);border:1px solid var(--panel-border);
+    border-radius:14px;padding:18px 18px 16px;
+    backdrop-filter:blur(6px);
+  }
+  .card .k-row{display:flex;align-items:center;gap:6px}
+  .card .k{
+    font-size:11.5px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.5px;
+  }
+  .card .v{
+    font-size:32px;font-weight:800;margin-top:8px;
+    color:var(--card-accent, var(--live));
+  }
+  .card .v .unit{font-size:16px;color:var(--muted);font-weight:600;margin-left:2px}
+  .card .why{font-size:12px;color:var(--dim);margin-top:7px;line-height:1.45}
+
+  /* ---------- info tooltip ---------- */
+  .info{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;
+    width:15px;height:15px;border-radius:50%;
+    background:rgba(255,255,255,.06);color:var(--dim);
+    font-size:10px;font-weight:700;font-style:normal;
+    cursor:default;flex-shrink:0;
+  }
+  .info:hover{background:var(--live);color:#06231e}
+  .info .tip{
+    display:none;position:absolute;left:50%;bottom:calc(100% + 9px);
+    transform:translateX(-50%);width:230px;
+    background:#131c2c;border:1px solid var(--panel-border);
+    border-radius:9px;padding:11px 13px;
+    font-size:12.5px;line-height:1.55;font-weight:400;
+    color:var(--muted);z-index:20;
+    box-shadow:0 10px 28px rgba(0,0,0,.5);
+  }
+  .info:hover .tip{display:block}
+
+  /* ---------- panels ---------- */
+  .panel{
+    background:var(--panel);border:1px solid var(--panel-border);
+    border-radius:14px;padding:20px 22px 18px;margin-bottom:18px;
+    backdrop-filter:blur(6px);
+  }
+  .panel h2{
+    font-size:15px;font-weight:700;color:var(--text);
+    display:flex;align-items:center;gap:6px;justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .panel h2 .left{display:flex;align-items:center;gap:6px}
+  .panel h2 .count{font-size:12px;font-weight:500;color:var(--dim)}
+
+  /* ---------- bars (clean, solid fill) ---------- */
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .bar-row:last-child{margin-bottom:0}
+  .bar-label{
+    width:112px;flex-shrink:0;font-size:13px;font-weight:600;color:var(--muted);
+  }
+  .bar-track{flex:1;height:20px;background:#1a2233;border-radius:6px;overflow:hidden}
+  .bar-fill{
+    height:100%;border-radius:6px;
+    display:flex;align-items:center;justify-content:flex-end;padding-right:9px;
+    color:#fff;font-size:11.5px;font-weight:700;
+    transition:width .5s ease;
+    min-width:2px;
+  }
+
+  .muted{color:var(--dim);font-size:13px}
+  .empty{color:var(--dim);font-size:13.5px;padding:20px 0}
+  .empty::before{content:"› "; color:var(--live)}
+
+  footer{margin-top:6px;text-align:right;font-size:11.5px;color:var(--dim)}
+
+  @media (max-width:600px){
+    body{padding:22px 16px 48px}
+    .bar-label{width:84px;font-size:12px}
+    .info .tip{width:180px;left:0;transform:none}
+  }
+  @media (prefers-reduced-motion: reduce){.pulse{animation:none}}
 </style>
 </head>
 <body>
-<a class="back" href="/">← Back to console</a>
-<h1>TruthLens — Metrics Dashboard</h1>
-<div class="sub">Live from SQLite (verdicts + logs) · computed locally, zero LLM cost</div>
-<div id="root"><p class="muted">Loading…</p></div>
+
+<canvas id="space"></canvas>
+
+<a class="back" href="/">&larr; Back to console</a>
+
+<div class="masthead">
+  <div>
+    <h1>TruthLens — Metrics</h1>
+    <div class="sub">SQLite · verdicts + logs · computed locally · zero LLM cost</div>
+  </div>
+  <div class="status"><span class="pulse"></span>Live · refreshes every 5s</div>
+</div>
+<div class="legend-note">Hover the <b>i</b> icon on any metric for a plain-English explanation.</div>
+
+<div id="root"><div class="empty">Connecting to metrics store…</div></div>
+
+<footer id="updated"></footer>
+
 <script>
-const VC=["Real","Fake","Misleading","Manipulated","Inconclusive"];
-function card(k,v,small){return `<div class="card"><div class="k">${k}</div><div class="v ${small?'small':''}">${v}</div></div>`;}
-function bar(label,val,max,cls){const pct=max?Math.round(val/max*100):0;
-  return `<div class="bar-row"><div class="bar-label">${label}</div><div class="bar-track"><div class="bar-fill ${cls}" style="width:${Math.max(pct,6)}%">${val}</div></div></div>`;}
-async function load(){
-  const r=await fetch('/api/v1/metrics');const m=await r.json();
-  const root=document.getElementById('root');
-  if(!m.enabled){root.innerHTML='<p class="muted">Metrics DB disabled (set DB_ENABLED=True).</p>';return;}
-  const bv=m.by_verdict||{},bi=m.by_input||{};
-  const maxV=Math.max(1,...VC.map(k=>bv[k]||0));
-  const stages=m.avg_latency_ms_per_stage||{};
-  const maxS=Math.max(1,...Object.values(stages));
-  let html='<div class="grid">';
-  html+=card('Total Checks',m.total_checks);
-  html+=card('Avg Confidence',Math.round((m.avg_confidence||0)*100)+'%');
-  html+=card('Human Review',Math.round((m.human_review_rate||0)*100)+'%');
-  html+=card('Success Rate',Math.round((m.success_rate||0)*100)+'%');
-  html+=card('Legal Claims',m.legal_claims);
-  html+=card('Manipulated',m.manipulated_detected);
-  html+='</div>';
-  html+='<div class="panel"><h2>Verdict Distribution</h2>';
-  VC.forEach(k=>{html+=bar(k,bv[k]||0,maxV,'v-'+k);});
-  html+='</div>';
-  html+='<div class="panel"><h2>By Input Type</h2>';
-  ['text','audio','image'].forEach(k=>{const mx=Math.max(1,bi.text||0,bi.audio||0,bi.image||0);html+=bar(k,bi[k]||0,mx,'stage');});
-  html+='</div>';
-  if(Object.keys(stages).length){
-    html+='<div class="panel"><h2>Avg Latency per Stage (ms)</h2>';
-    Object.entries(stages).forEach(([k,v])=>{html+=bar(k,v,maxS,'stage');});
-    html+='</div>';
+  /* ============ space background: stars + drifting asteroids ============ */
+  (function () {
+    const canvas = document.getElementById("space");
+    const ctx = canvas.getContext("2d");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let w, h, stars = [], asteroids = [];
+
+    function rockPath(radius, jaggedness, points) {
+      const pts = [];
+      for (let i = 0; i < points; i++) {
+        const angle = (i / points) * Math.PI * 2;
+        const r = radius * (1 - jaggedness / 2 + Math.random() * jaggedness);
+        pts.push([Math.cos(angle) * r, Math.sin(angle) * r]);
+      }
+      return pts;
+    }
+
+    function makeAsteroid() {
+      const radius = 6 + Math.random() * 22;
+      return {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        radius,
+        pts: rockPath(radius, 0.5, 8 + Math.floor(Math.random() * 3)),
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.0006,
+        vx: (Math.random() - 0.5) * 0.06,
+        vy: 0.03 + Math.random() * 0.07,
+        alpha: 0.16 + Math.random() * 0.22,
+      };
+    }
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      const starCount = Math.round((w * h) / 9500);
+      stars = Array.from({ length: starCount }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.1 + 0.2,
+        baseAlpha: Math.random() * 0.55 + 0.15,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.15 + 0.02,
+        drift: Math.random() * 0.04 + 0.008,
+      }));
+      const asteroidCount = Math.max(5, Math.round(w / 220));
+      asteroids = Array.from({ length: asteroidCount }, makeAsteroid);
+    }
+
+    function drawAsteroid(a) {
+      ctx.save();
+      ctx.translate(a.x, a.y);
+      ctx.rotate(a.rot);
+      ctx.beginPath();
+      a.pts.forEach(([px, py], i) => (i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py)));
+      ctx.closePath();
+      const grad = ctx.createLinearGradient(-a.radius, -a.radius, a.radius, a.radius);
+      grad.addColorStop(0, `rgba(120,128,150,${a.alpha})`);
+      grad.addColorStop(1, `rgba(30,36,52,${a.alpha})`);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(150,160,185,${a.alpha * 0.5})`;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function tick(t) {
+      ctx.clearRect(0, 0, w, h);
+
+      for (const s of stars) {
+        const twinkle = reduceMotion ? 1 : 0.55 + 0.45 * Math.sin(t * 0.001 * s.speed + s.phase);
+        ctx.globalAlpha = s.baseAlpha * twinkle;
+        ctx.fillStyle = "#dfe9ff";
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        if (!reduceMotion) {
+          s.y += s.drift;
+          if (s.y > h) s.y = 0;
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      for (const a of asteroids) {
+        drawAsteroid(a);
+        if (!reduceMotion) {
+          a.x += a.vx;
+          a.y += a.vy;
+          a.rot += a.rotSpeed;
+          if (a.y - a.radius > h) { a.y = -a.radius; a.x = Math.random() * w; }
+          if (a.x < -40) a.x = w + 40;
+          if (a.x > w + 40) a.x = -40;
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    requestAnimationFrame(tick);
+  })();
+
+  /* ============ metrics dashboard ============ */
+  const VERDICTS = [
+    ["Real", "--real"],
+    ["Fake", "--fake"],
+    ["Misleading", "--misleading"],
+    ["Manipulated", "--manipulated"],
+    ["Inconclusive", "--inconclusive"],
+  ];
+
+  const STAT_HELP = {
+    "Total Checks": "How many pieces of content have gone through the full verification pipeline in total.",
+    "Avg Confidence": "How sure the system is, on average, about the verdicts it gives. Low or falling values mean it's guessing more often — not necessarily wrong, just unsure.",
+    "Human Review": "Share of checks flagged for a person to double-check instead of trusting the automated verdict. A high % means the pipeline is leaning on humans a lot.",
+    "Success Rate": "Share of checks that completed without an error. This measures reliability, not accuracy.",
+    "Legal Claims": "Number of checks where the content contained a claim tagged as legal or regulatory, which gets handled with extra caution.",
+    "Manipulated": "Number of checks where the verdict was specifically 'Manipulated' — edited or doctored media. Broken out because it's usually the most actionable verdict.",
+  };
+  const PANEL_HELP = {
+    verdict: "How every check ever run breaks down across the five possible outcomes. A panel dominated by Inconclusive usually means the evidence-gathering step needs work, not that content is genuinely ambiguous.",
+    input: "What kind of content people are actually submitting — text, audio, or image — so you know where to focus testing and support.",
+    latency: "Average time each pipeline stage takes, in milliseconds. The longest bar is your current bottleneck.",
+  };
+
+  const fmtPct = (x) => Math.round((x || 0) * 100) + "%";
+
+  function info(text) {
+    return `<span class="info">i<span class="tip">${text}</span></span>`;
   }
-  root.innerHTML=html;
-}
-load();setInterval(load,5000);
+
+  function statCard(label, value, accentVar, unit = "") {
+    return `
+      <div class="card">
+        <div class="k-row"><span class="k">${label}</span>${info(STAT_HELP[label] || "")}</div>
+        <div class="v" style="color:var(${accentVar})">${value}${unit ? `<span class="unit">${unit}</span>` : ""}</div>
+      </div>`;
+  }
+
+  function bar(label, value, max, colorVar) {
+    const pct = max ? Math.round((value / max) * 100) : 0;
+    return `
+      <div class="bar-row">
+        <div class="bar-label">${label}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${Math.max(pct, value > 0 ? 4 : 0)}%;background:var(${colorVar})">${value}</div>
+        </div>
+      </div>`;
+  }
+
+  function panel(title, countLabel, explainText, bodyHtml) {
+    return `
+      <div class="panel">
+        <h2><span class="left">${title}${info(explainText)}</span>${countLabel ? `<span class="count">${countLabel}</span>` : ""}</h2>
+        ${bodyHtml}
+      </div>`;
+  }
+
+  async function load() {
+    const root = document.getElementById("root");
+    let metrics;
+    try {
+      const res = await fetch("/api/v1/metrics");
+      metrics = await res.json();
+    } catch (err) {
+      root.innerHTML = `<div class="empty">Metrics endpoint unreachable — retrying…</div>`;
+      return;
+    }
+
+    if (!metrics.enabled) {
+      root.innerHTML = `<div class="empty">Metrics DB disabled — set DB_ENABLED=True</div>`;
+      return;
+    }
+
+    const byVerdict = metrics.by_verdict || {};
+    const byInput = metrics.by_input || {};
+    const stages = metrics.avg_latency_ms_per_stage || {};
+
+    const maxVerdict = Math.max(1, ...VERDICTS.map(([k]) => byVerdict[k] || 0));
+    const inputTypes = ["text", "audio", "image"];
+    const maxInput = Math.max(1, ...inputTypes.map((k) => byInput[k] || 0));
+    const stageEntries = Object.entries(stages);
+    const maxStage = Math.max(1, ...stageEntries.map(([, v]) => v));
+
+    let html = "";
+
+    html += `<div class="grid">`;
+    html += statCard("Total Checks", metrics.total_checks ?? 0, "--live");
+    html += statCard("Avg Confidence", fmtPct(metrics.avg_confidence), "--real");
+    html += statCard("Human Review", fmtPct(metrics.human_review_rate), "--misleading");
+    html += statCard("Success Rate", fmtPct(metrics.success_rate), "--stage");
+    html += statCard("Legal Claims", metrics.legal_claims ?? 0, "--manipulated");
+    html += statCard("Manipulated", metrics.manipulated_detected ?? 0, "--fake");
+    html += `</div>`;
+
+    html += panel(
+      "Verdict Distribution",
+      `${metrics.total_checks ?? 0} total`,
+      PANEL_HELP.verdict,
+      VERDICTS.map(([label, colorVar]) => bar(label, byVerdict[label] || 0, maxVerdict, colorVar)).join("")
+    );
+
+    html += panel(
+      "By Input Type",
+      "",
+      PANEL_HELP.input,
+      inputTypes.map((k) => bar(k, byInput[k] || 0, maxInput, "--stage")).join("")
+    );
+
+    if (stageEntries.length) {
+      html += panel(
+        "Avg Latency per Stage",
+        "milliseconds",
+        PANEL_HELP.latency,
+        stageEntries.map(([k, v]) => bar(k, Math.round(v), maxStage, "--stage")).join("")
+      );
+    }
+
+    root.innerHTML = html;
+    document.getElementById("updated").textContent = "Last updated " + new Date().toLocaleTimeString();
+  }
+
+  load();
+  setInterval(load, 5000);
 </script>
 </body>
 </html>
