@@ -1,21 +1,17 @@
-#Phase 1-4 dependencies
-# First: pip install --upgrade pip setuptools wheel
 fastapi
 uvicorn[standard]
 python-multipart
 pydantic
 python-dotenv
-# LLM
 langchain
 langchain-google-genai
 google-generativeai
-# Phase 3 web search (free)
 ddgs
 wikipedia
-# Phase 4 Tree-of-Thought + Legal RAG
 langgraph
 langchain-core
-# Legal RAG (only needed when you build the law index):
+pytesseract
+Pillow
 langchain-community
 langchain-chroma
 langchain-huggingface
@@ -23,3 +19,9 @@ langchain-text-splitters
 sentence-transformers
 chromadb
 pypdf
+tensorflow
+tensorflow-cpu
+numpy
+openai-whisper
+ragas
+datasets

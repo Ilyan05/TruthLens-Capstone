@@ -1,41 +1,65 @@
-"""Claim Extraction Agent (claim + entities + claim type + search_query)."""
-
 from backend import llm
 
-_CLAIM_PROMPT = """You extract the central factual claim from a user's message
-so it can be fact-checked. The user may write in English or Hindi/Hinglish.
-
+_P = """
+Extract the central factual claim so it can be fact-checked.
+User may write Hindi/English.
 USER MESSAGE: "{message}"
+Return ONLY JSON:
 
-Return ONLY a JSON object with this exact shape:
 {{
-  "claim_text": "the core claim as a clear English statement",
-  "entities": {{"people": [], "organizations": [], "places": [], "dates": [], "events": []}},
-  "claim_type": "factual | opinion | satire",
-  "search_query": "concise web search query to find evidence for this claim"
+    "claim_text": "clear English statement",
+    "entities": {{
+        "people": [],
+        "organizations": [],
+        "places": [],
+        "dates": [],
+        "events": []
+    }},
+    "claim_type": "factual | opinion | satire",
+    "search_query": "concise web search query"
 }}
+"""
 
-Guidelines:
-- Strip filler ("I heard that", "is it true", "bro") and keep the factual core.
-- claim_text must be a neutral statement, not a question.
-- search_query should include key names/keywords for good search results."""
+def extract_claim(message):
+    p = _P.format(
+        message=(message or "").replace('"', "'")
+    )
 
-
-def extract_claim(message: str) -> dict:
-    prompt = _CLAIM_PROMPT.format(message=(message or "").replace('"', "'"))
-    default = {
+    d = {
         "claim_text": message,
-        "entities": {"people": [], "organizations": [], "places": [], "dates": [], "events": []},
+        "entities": {
+            "people": [],
+            "organizations": [],
+            "places": [],
+            "dates": [],
+            "events": []
+        },
         "claim_type": "factual",
-        "search_query": message,
+        "search_query": message
     }
-    result = llm.call_llm_json(prompt, reasoning=False, default=default)
-    result.setdefault("claim_text", message)
-    result.setdefault("claim_type", "factual")
-    result.setdefault("search_query", result.get("claim_text", message))
-    ents = result.get("entities") or {}
-    
-    for k in ("people", "organizations", "places", "dates", "events"):
-        ents.setdefault(k, [])
-    result["entities"] = ents
-    return result
+
+    r = llm.call_llm_json(
+        p,
+        reasoning=False,
+        default=d
+    )
+
+    r.setdefault("claim_text", message)
+    r.setdefault("claim_type", "factual")
+    r.setdefault(
+        "search_query",
+        r.get("claim_text", message)
+    )
+
+    e = r.get("entities") or {}
+
+    for k in (
+        "people",
+        "organizations",
+        "places",
+        "dates",
+        "events"
+    ):
+        e.setdefault(k, [])
+    r["entities"] = e
+    return r

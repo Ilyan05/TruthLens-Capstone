@@ -14,24 +14,29 @@
       <div class="brand"><span class="logo">🔍</span>
         <div><div class="brand-name">TruthLens</div><div class="brand-tag">AI Fact Verification</div></div></div>
       <button id="newChatBtn" class="new-chat"><span>+</span> New Verification</button>
-      <div class="side-section"><div class="side-title">How it works</div>
-        <ol class="steps-list">
-          <li>Submit a claim — text, audio, or image</li>
-          <li>AI extracts the core claim</li>
-          <li>Searches trusted sources</li>
-          <li>Tree-of-Thought + Reflection</li>
-          <li>Verdict, confidence &amp; evidence</li>
-        </ol></div>
-      <div class="side-section"><div class="side-title">Verdict types</div>
+
+      <!-- Chat history (recent) -->
+      <div class="side-section history-section">
+        <div class="side-title">Recent</div>
+        <div id="historyList" class="history-list"><div class="history-empty">No past checks yet</div></div>
+      </div>
+
+      <div class="side-section">
+        <div class="side-title">Verdict types</div>
         <div class="legend">
           <span class="legend-item"><i class="dot v-Real"></i>Real</span>
           <span class="legend-item"><i class="dot v-Fake"></i>Fake</span>
           <span class="legend-item"><i class="dot v-Misleading"></i>Misleading</span>
           <span class="legend-item"><i class="dot v-Manipulated"></i>Manipulated</span>
           <span class="legend-item"><i class="dot v-Inconclusive"></i>Inconclusive</span>
-        </div></div>
-      <div class="side-footer"><span class="badge-phase">Phase 5 · Audio+Image</span><span id="llmStatus" class="llm-status">checking…</span></div>
+        </div>
+      </div>
+      <div class="side-footer">
+        <a class="metrics-link" href="/metrics" target="_blank">📊 Metrics</a>
+        <span id="llmStatus" class="llm-status">checking…</span>
+      </div>
     </aside>
+
     <main class="chat">
       <header class="chat-header">
         <div><div class="title">Fact Verification Console</div>
@@ -41,8 +46,8 @@
       <div id="messages" class="messages">
         <div class="msg bot"><div class="avatar">🔍</div>
           <div class="bubble"><b>Welcome to TruthLens.</b><br />
-            Submit any claim as <b>text</b>, upload a <b>voice note</b>, or an <b>image</b> — I'll verify it
-            through a Tree-of-Thought pipeline with a reflection check, and cite evidence (including Indian law).
+            Submit any claim as <b>text</b>, record/upload a <b>voice note</b>, or an <b>image</b>. For images I also
+            run <b>forensics</b> (ELA + EXIF + CNN) to detect editing. Past checks appear under <b>Recent</b>.
             <div class="examples">
               <span class="chip" data-ex="The Sun rises in the east">The Sun rises in the east</span>
               <span class="chip" data-ex="J.P. Morgan was Indian">J.P. Morgan was Indian</span>
@@ -55,9 +60,18 @@
         <div class="composer">
           <div class="attach">
             <label class="attach-btn" title="Upload image">🖼️<input type="file" id="imageInput" accept=".jpg,.jpeg,.png" hidden /></label>
-            <label class="attach-btn" title="Upload audio">🎙️<input type="file" id="audioInput" accept=".mp3,.wav,.m4a,.ogg" hidden /></label>
+            <div class="mic-wrap">
+              <button type="button" class="attach-btn" id="micBtn" title="Audio options">🎙️<span class="caret">▾</span></button>
+              <div class="mic-menu" id="micMenu" hidden>
+                <button type="button" class="mic-item" id="recordItem"><span class="mi-ic">🔴</span>
+                  <span><b>Record with mic</b><small>Speak your claim</small></span></button>
+                <button type="button" class="mic-item" id="uploadItem"><span class="mi-ic">📁</span>
+                  <span><b>Upload audio file</b><small>mp3 · wav · m4a · ogg</small></span></button>
+              </div>
+              <input type="file" id="audioInput" accept=".mp3,.wav,.m4a,.ogg,.webm" hidden />
+            </div>
           </div>
-          <textarea id="input" rows="1" placeholder="Enter a claim to verify…  (or upload audio / image)"></textarea>
+          <textarea id="input" rows="1" placeholder="Enter a claim to verify…  (or record / upload audio, or an image)"></textarea>
           <button id="sendBtn" class="send" title="Verify">➤</button>
         </div>
         <div id="fileHint" class="file-hint"></div>
