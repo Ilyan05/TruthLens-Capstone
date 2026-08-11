@@ -46,19 +46,10 @@ def pre_ground(claim_text):
     except (TypeError, ValueError):
         c = 0.0
 
-    r["initial_confidence"] = max(
-        0.0,
-        min(1.0, c)
-    )
-
-    r.setdefault(
-        "initial_assessment",
-        "unclear"
-    )
-    r.setdefault(
-        "risk_level",
-        "high"
-    )
+    r["initial_confidence"] = max(0.0,min(1.0, c))
+        
+    r.setdefault("initial_assessment","unclear")
+    r.setdefault("risk_level","high")
 
     r["fast_path"] = (
         r["initial_confidence"] >= config.FASTPATH_CONFIDENCE
